@@ -1,9 +1,14 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 using namespace std;
 
-int main(){
+void
 
-   cout << "hello world";
-   cout << "hello again";
-return 0;
+    int
+    main()
+{
+
+    return 0;
 }
