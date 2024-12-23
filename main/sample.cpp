@@ -8,6 +8,7 @@ void Delete();
 void Count();
 void file_writing();
 void file_reading();
+void Option();
 
 int id;
 string name, city, state, couwntry, phone, email;
@@ -33,17 +34,21 @@ cin >> mode;
     else 
     {
         cout << "error!";
+        return 0;
     }
 
-cout << endl
-     << "1. Delete" << endl
-     << "2. Update" << endl
-     << "3. Count"  << endl; 
+   
 
-     int option;
-     cin >> option;
+while(true)
+{       cout << endl
+        << "1. Delete" << endl
+        << "2. Update" << endl
+        << "3. Count"  << endl 
+        << "4. Exit" << endl;
+        int option;
+        cin >> option;
 
-     switch(option) 
+        switch(option) 
      {
         case 1:
             Delete();
@@ -57,23 +62,28 @@ cout << endl
             Count();
             break;
         
+        case 4:
+            cout << "Exiting..." << endl;
+            return 0;
+        
         default:
-            cout << "error";
-
+            cout << "Invalid option. Try again!" << endl;
+            break;
      }
+}
 
 
 return 0;
 }
 
 void Update(){
-    cout << "Update";
+    cout << "Updated!" << endl;
 };//
 void Delete(){
-    cout << "Delete";
+    cout << "Deleted!" << endl;
 };
 void Count(){
-    cout << "count";
+    cout << "counted!" << endl;
 };
 void file_writing(){
     ofstream inputfile;
@@ -97,6 +107,7 @@ void file_writing(){
 
 };
 void file_reading(){
+    
 
     ifstream infile;
     infile.open("outputfile1.txt");
@@ -113,4 +124,3 @@ void file_reading(){
     infile.close();
 
 };
-
