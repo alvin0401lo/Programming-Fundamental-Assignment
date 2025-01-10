@@ -5,15 +5,17 @@
 #include <string>
 using namespace std;
 
-void createDatabase(string db);
+void createDatabase(string &db);
 
 int main()
 {
+    string db;
+    createDatabase(db);
 
     return 0;
 }
 
-void createDatabase(string db)
+void createDatabase(string &db)
 {
     cout << "Do you want to create new database to store data? (y/n)" << endl;
     char choice;
@@ -21,43 +23,33 @@ void createDatabase(string db)
 
     if (choice == 'y')
     {
-        cout << "Enter database name: ";
+        cout << "Enter database name (exp: name.mdb): ";
         cin >> db;
-        cout << "Database created successfully." << endl;
-        cout << "Database name: " << db << endl;
-    }
 
-    else if (choice == 'n')
-    {
-        cout << "Database not created. Do you want to open existing database? (y/n)" << endl;
-        char choice2;
-        cin >> choice2;
+        ofstream file(db);
 
-        if (choice2 == 'y')
+        if (file)
         {
-            cout << "Enter database name: ";
-            cin >> db;
-            cout << "Database opened successfully." << endl;
+            cout << "Database created successfully." << endl;
             cout << "Database name: " << db << endl;
-        }
-
-        else if (choice2 == 'n')
-        {
-            cout << "Database not opened." << endl;
-        }
-
-        else if (choice2 != 'y' || 'n')
-        {
-            cout << "Invalid choice. Please enter y or n." << endl;
+            return;
         }
 
         else
         {
-            cout << "Database not opened. Try check the database name." << endl;
+            cout << "Error creating database." << endl;
         }
+
+        file.close();
     }
 
-    else if (choice != 'y' || 'n')
+    else if (choice == 'n')
+    {
+        cout << "Database not created. Program ended." << endl;
+        exit(0);
+    }
+
+    else
     {
         cout << "Invalid choice. Please enter y or n." << endl;
     }
