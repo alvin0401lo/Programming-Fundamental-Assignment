@@ -186,7 +186,41 @@ void Update(){
 };
 
 void Delete(){
-    cout << "Deleted!" << endl;
+    string fileName, tempFile = "temp.mdb";
+    ifstream infile;
+    ofstream outfile;
+
+    cout << "Please enter the file name: ";
+    cin >> fileName;
+
+    // Display the content of the file
+    infile.open(fileName + ".mdb");
+    if (!infile) {
+        cout << "Error: File not found or could not be opened!" << endl;
+        return;
+    }
+
+    cout << "Contents of the file:" << endl;
+    string line;
+    while (getline(infile, line)) {
+        cout << line << endl;
+    }
+    infile.close();
+
+    int choice;
+    cout << "\nChoose an option:" << endl;
+    cout << "1. Delete the entire file" << endl;
+    cout << "2. Delete a specific record by ID" << endl;
+    cin >> choice;
+
+    if (choice == 1) {     //delete entire file
+        if (remove((fileName + ".mdb").c_str()) == 0) {
+            cout << "File " << fileName << ".mdb deleted successfully!" << endl;
+        } 
+        else {
+            cout << "Error: File not found or could not be deleted!" << endl;
+        }
+    } 
     
     // Wait for user to press any key 
     cout << "Press any key to continue..." << endl; 
