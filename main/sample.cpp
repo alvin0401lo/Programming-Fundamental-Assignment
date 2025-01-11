@@ -176,14 +176,93 @@ void secondOption()
     }
 }
 
-void Update(){
-    cout << "Updated!" << endl;
-    
-    // Wait for user to press any key 
-    cout << "Press any key to continue..." << endl; 
-    cin.ignore(); // Ignore the newline character left in the input buffer 
-    cin.get(); // Wait for user to press any key
-};
+void Update() {
+
+    string fileName;
+    cout << "Please enter the file name: " << endl;
+    cin >> fileName;
+
+    ifstream infile(fileName + ".mdb");
+    ofstream tempfile("temp.mdb");
+
+    string line;
+    int id;
+    string field, newValue;
+
+    if (!infile.is_open()) 
+    {
+        cout << "Error opening file!" << endl;
+        return;
+    }
+
+    displayFileContent(fileName + ".mdb");
+
+    cout << "Enter the ID you want to update: ";
+    cin >> id;
+
+    cout << "Enter the field you want to update (Name, City, State, Country, Phone, Email): ";
+    cin >> field;
+
+    cout << "Enter the new value: ";
+    cin >> newValue;
+
+    getline(infile, line);
+    tempfile << line << endl;
+
+    while (getline(infile, line)) 
+    {
+        int currentID;
+        stringstream ss(line);
+        ss >> currentID;
+
+        if (currentID == id) {
+
+            ss >> ctm_name >> ctm_city >> ctm_state >> ctm_country >> ctm_phone >> ctm_email;
+
+            if (field == "Name") ctm_city = newValue;
+            else if (field == "name") ctm_name = newValue;
+
+            else if (field == "City") ctm_city = newValue;
+            else if (field == "city") ctm_city = newValue;
+
+            else if (field == "State") ctm_state = newValue;
+            else if (field == "state") ctm_state = newValue;
+
+            else if (field == "Country") ctm_country = newValue;
+            else if (field == "country") ctm_country = newValue;
+
+            else if (field == "Phone") ctm_phone = newValue;
+            else if (field == "phone") ctm_phone = newValue;
+
+            else if (field == "Email") ctm_email = newValue;
+            else if (field == "email") ctm_email = newValue;
+
+            else 
+                cout << "Error, please try again!" << endl;
+
+            tempfile << left << setw(5) << currentID << setw(20) << ctm_name << setw(20) << ctm_city
+                     << setw(20) << ctm_state << setw(20) << ctm_country << setw(20) << ctm_phone
+                     << setw(30) << ctm_email << endl;
+        } 
+        else 
+        {
+            tempfile << line << endl;
+        }
+    }
+
+    infile.close();
+    tempfile.close();
+
+    remove((fileName + ".mdb").c_str());
+    rename("temp.mdb", (fileName + ".mdb").c_str());
+
+    cout << "Update successfully!" << endl;
+    displayFileContent(fileName + ".mdb");
+
+    cout << "Press any key to continue..." << endl;
+    cin.ignore();
+    cin.get();
+}
 
 void Delete(){
     cout << "Deleted!" << endl;
