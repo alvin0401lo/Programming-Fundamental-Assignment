@@ -1,0 +1,203 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+
+
+using namespace std;
+
+void displayHeader();
+void displayData(int, const vector<string>&, const vector<string>&,
+                 const vector<string>&, const vector<string>&,
+                 const vector<string>&, const vector<string>&,
+                 const vector<string>&);
+void insertNewCustomer(int&, vector<string>&, vector<string>&,
+                       vector<string>&, vector<string>&,
+                       vector<string>&, vector<string>&,
+                       vector<string>&);
+
+vector<string> columnName = {"Customer ID", "Customer Name", "Customer City", "Customer State", "Customer Country", "Customer Phone", "Customer Email"};
+
+int main()
+{
+   ifstream infile;
+   ofstream outfile;
+   string line;
+   int currentCustomer = 0;
+
+   vector<string> customerID;
+   vector<string> customerName;
+   vector<string> customerCity;
+   vector<string> customerState;
+   vector<string> customerCountry;
+   vector<string> customerPhone;
+   vector<string> customerEmail;
+
+
+   //open file
+   infile.open("fileName");
+   if (!infile)
+   {
+       cout << "Error opening file!" << endl;
+       return 1;
+   }
+
+   while (getline(infile, line))
+    {
+       int pos = 0;
+
+       // Customer ID
+       pos = line.find(',');
+       customerID.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer Name
+       pos = line.find(',');
+       customerName.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer City
+       pos = line.find(',');
+       customerCity.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer State
+       pos = line.find(',');
+       customerState.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer Country
+       pos = line.find(',');
+       customerCountry.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer Phone
+       pos = line.find(',');
+       customerPhone.push_back(line.substr(0, pos));
+       line.erase(0, pos + 1);
+
+       // Customer Email
+       customerEmail.push_back(line);
+    }
+
+    infile.close();
+
+    currentCustomer = customerID.size();
+
+    //display current table
+    displayHeader();
+    displayData(currentCustomer, customerID, customerName, customerCity, customerState, customerCountry, customerPhone, customerEmail);
+
+    // insert new customer
+    insertNewCustomer(currentCustomer, customerID, customerName, customerCity, customerState, customerCountry, customerPhone, customerEmail);
+
+    // save to output file
+    outfile.open("fileName");
+
+    if (!outfile) {
+        cout << "Error opening file for writing!" << endl;
+        return 1;
+    }
+
+    for (int i = 0; i < currentCustomer; i++) {
+        outfile << customerID[i] << ","
+                << customerName[i] << ","
+                << customerCity[i] << ","
+                << customerState[i] << ","
+                << customerCountry[i] << ","
+                << customerPhone[i] << ","
+                << customerEmail[i] << endl;
+    }
+
+    outfile.close();  // Close the output file
+    cout << "Data has been successfully written to the file!" << endl;
+
+    return 0;
+}
+
+void displayHeader()
+{
+   cout << setw(20) << left << columnName[0]
+        << setw(20) << left << columnName[1]
+        << setw(20) << left << columnName[2]
+        << setw(20) << left << columnName[3]
+        << setw(20) << left << columnName[4]
+        << setw(20) << left << columnName[5]
+        << setw(20) << left << columnName[6]
+        << endl;
+   cout << "-----------------------------------------------------------------------------------------------------------------------------------------" << endl;
+}
+
+void displayData(int currentCustomer, const vector<string>& customerID, const vector<string>& customerName,
+                 const vector<string>& customerCity, const vector<string>& customerState,
+                 const vector<string>& customerCountry, const vector<string>& customerPhone,
+                 const vector<string>& customerEmail)
+{
+   for (int i = 0; i < currentCustomer; i++)
+   {
+       cout << setw(20) << left << customerID[i]
+            << setw(20) << left << customerName[i]
+            << setw(20) << left << customerCity[i]
+            << setw(20) << left << customerState[i]
+            << setw(20) << left << customerCountry[i]
+            << setw(20) << left << customerPhone[i]
+            << setw(20) << left << customerEmail[i]
+            << endl;
+   }
+   cout << "\nCurrent number of customers: " << currentCustomer << endl;
+}
+
+void insertNewCustomer(int& currentCustomer, vector<string>& customerID, vector<string>& customerName,
+                       vector<string>& customerCity, vector<string>& customerState,
+                       vector<string>& customerCountry, vector<string>& customerPhone,
+                       vector<string>& customerEmail)
+{
+   int insertCount;
+   cout << "How many new customer do you want to insert?" << endl;
+   cin >> insertCount;
+   cin.ignore();
+
+   for (int j = 0; j< insertCount; j++)
+    {
+       string newID, newName, newCity, newState, newCountry, newPhone, newEmail;
+
+       cout << "Enter new customer data for customer " << (j+1) << endl;
+
+       cout << "Customer ID: ";
+       getline(cin,newID);
+
+       cout << "Customer Name: ";
+       getline(cin, newName);
+
+       cout << "Customer City: ";
+       getline(cin, newCity);
+
+       cout << "Customer State: ";
+       getline(cin, newState);
+
+       cout << "Customer Country: ";
+       getline(cin, newCountry);
+
+       cout << "Customer Phone: ";
+       getline(cin, newPhone);
+
+       cout << "Customer Email: ";
+       getline(cin, newEmail);
+
+       // Add new customer data
+       customerID.push_back(newID);
+       customerName.push_back(newName);
+       customerCity.push_back(newCity);
+       customerState.push_back(newState);
+       customerCountry.push_back(newCountry);
+       customerPhone.push_back(newPhone);
+       customerEmail.push_back(newEmail);
+
+       currentCustomer++;
+
+       // display updated data
+       displayHeader();
+       displayData(currentCustomer, customerID, customerName, customerCity, customerState, customerCountry, customerPhone, customerEmail);
+   }
+}
