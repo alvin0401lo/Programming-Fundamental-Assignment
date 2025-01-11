@@ -305,7 +305,107 @@ void Update() {
 }
 
 void Delete() {
+  
+    string fileName, tempFile = "temp.mdb";
+    ifstream infile;
+    ofstream outfile;
+    string line;
 
+    cout << "Please enter the file name: ";
+    cin >> fileName;
+
+    fstream file;
+    file.open(fileName + ".mdb");
+    if (!file.good()) {
+        cout << "File does not exist!" << endl;
+        cout << "Press any key to continue..." << endl;
+        cin.ignore();
+        cin.get();
+        return;
+    }
+    file.close();
+
+    // Display the content of the file
+    displayFileContent(fileName + ".mdb");
+
+    int choice;
+    cout << "\nChoose an option:" << endl;
+    cout << "1. Delete the entire file" << endl;
+    cout << "2. Delete a specific record by ID" << endl;
+    cout << "3. Back to previous page" << endl;
+    cin >> choice;
+
+    if (choice == 1) {     //delete entire file
+        if (remove((fileName + ".mdb").c_str()) == 0) {
+            cout << "File " << fileName << ".mdb deleted successfully!" << endl;
+        } 
+        else {
+            cout << "Error: File not found or could not be deleted!" << endl;
+        }
+    } 
+    else if (choice == 2){     //delete specific id
+        infile.open(fileName + ".mdb");
+        outfile.open(tempFile);
+
+        if (!infile || !outfile){
+            cout << "Error opening file!" << endl;
+            return;
+        }
+
+        int deleteID;
+        cout << "Enter the ID to delete: ";
+        cin >> deleteID;
+
+        bool found = false;
+        int currentID = 1;
+        bool headerWritten = false;
+        
+        while (getline(infile, line)) {
+            if (!headerWritten){
+                outfile << line << endl;
+                headerWritten = true;
+                continue;
+            }
+
+            int recordID = stoi(line.substr(0, line.find(' ')));
+
+            if (recordID == deleteID){
+                found = true;
+                continue;
+            }
+
+            line.replace(0, line.find(' '), to_string(currentID++));
+            outfile << line << endl;
+        }
+
+        infile.close();
+        outfile.close();
+
+        if (found){
+            remove((fileName + ".mdb").c_str());
+            rename(tempFile.c_str(), (fileName + ".mdb").c_str());
+
+            if (currentID == 1){
+                remove((fileName + ".mdb").c_str());
+                cout << "Record deleted" << endl << "File is now empty. File removed." << endl;
+            }
+            else {
+                cout << "Record with ID " << deleteID << " deleted successfully!" << endl;
+                displayFileContent(fileName + ".mdb");
+            }
+        }
+        else {
+            remove(tempFile.c_str());
+            cout << "Record not found" << endl;
+        }
+    }
+    else if (choice == 3) {
+        return;
+    }
+    else {
+        cout << "Invalid choice! Please select 1 or 2." << endl;
+    }
+  
     cout << "Press any key to continue..." << endl;
     cin.ignore();
     cin.get();
