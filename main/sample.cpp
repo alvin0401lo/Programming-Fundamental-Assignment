@@ -305,7 +305,7 @@ void Update() {
 }
 
 void Delete() {
-
+  
     string fileName, tempFile = "temp.mdb";
     ifstream infile;
     ofstream outfile;
@@ -405,7 +405,7 @@ void Delete() {
     else {
         cout << "Invalid choice! Please select 1 or 2." << endl;
     }
-
+  
     cout << "Press any key to continue..." << endl;
     cin.ignore();
     cin.get();
