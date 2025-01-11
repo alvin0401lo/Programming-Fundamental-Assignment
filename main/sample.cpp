@@ -274,10 +274,37 @@ void Delete(){
 };
 
 void Count(){
-    cout << "counted!" << endl;
     
-    // Wait for user to press any key 
-    cout << "Press any key to continue..." << endl; 
-    cin.ignore(); // Ignore the newline character left in the input buffer 
-    cin.get(); // Wait for user to press any key
+    string fileName;
+    cout << "Please enter the file name: " << endl;
+    cin >> fileName;
+
+    ifstream infile(fileName + ".mdb");
+    string line;
+
+    int count = 0;
+
+    if (!infile.is_open()) 
+    {
+        cout << "Error opening file!" << endl;
+        return;
+    }
+
+    getline(infile, line); // Skip header line
+
+    while (getline(infile, line)) 
+    {
+        if (!line.empty()) 
+        { 
+            count++;
+        }
+    }
+
+    infile.close();
+
+    cout << "The number of customer is: " << count << endl;
+
+    cout << "Press any key to continue..." << endl;
+    cin.ignore();
+    cin.get();
 };
