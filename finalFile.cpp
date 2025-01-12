@@ -6,20 +6,19 @@
 #include <sstream>
 using namespace std;
 
-void fileCreate(const string&);
-void tableCreate(const string&);
-void displayContent(const string&);
-void fileOpen(const string&);
-void secondOption(const string&);
-void fileUpdate(const string&);
-void fileDelete(const string&);
-void fileCount(const string&);
-void insertNewRow(const string&);
+void fileCreate(const string &);
+void tableCreate(const string &);
+void displayContent(const string &);
+void fileOpen(const string &);
+void secondOption(const string &);
+void fileUpdate(const string &);
+void fileDelete(const string &);
+void fileCount(const string &);
+void insertNewRow(const string &);
 
 int ctm_id;
-string ctm_name, ctm_city, ctm_state, 
-       ctm_country, ctm_phone, ctm_email;
-    
+string ctm_name, ctm_city, ctm_state,
+    ctm_country, ctm_phone, ctm_email;
 
 int main()
 {
@@ -29,59 +28,68 @@ int main()
     while (true)
     {
         cout << "1. Create a file" << endl;
-        cout << "2. Open existing file"  << endl;
-        cout << "3. Exit"              << endl;
+        cout << "2. Open existing file" << endl;
+        cout << "3. Exit" << endl;
 
         cin >> mode;
 
-        switch(mode)
+        switch (mode)
         {
-            case 1:
-                cout << "Please enter the file name: ";
-                cin >> fileName;
+        case 1:
+            cout << "Please enter the file name: ";
+            cin >> fileName;
 
-                fileCreate(fileName);
-                tableCreate(fileName);
-                secondOption(fileName);
-                break;
+            fileCreate(fileName);
+            tableCreate(fileName);
+            secondOption(fileName);
+            break;
 
-            case 2:
-                cout << "Please enter the file name: ";
-                cin >> fileName;
-                fileOpen(fileName);
-                secondOption(fileName);
-                break;
-            
-            case 3://Exit from this program
-                cout << "Exiting......" << endl;
-                return 0;
+        case 2:
+            cout << "Please enter the file name: ";
+            cin >> fileName;
+            fileOpen(fileName);
+            secondOption(fileName);
+            break;
 
-            default:
-                cout << "Error, please input a valid number." << endl;
-                break;
+        case 3: // Exit from this program
+            cout << "Exiting......" << endl;
+            return 0;
+
+        default:
+            cout << "Error, please input a valid number." << endl;
+            break;
         }
     }
 
     return 0;
 }
 
-void fileCreate(const string& fileName) {
-    ofstream file(fileName + ".mdb");
-    if (!file.is_open()) {
-        cout << "Error opening file for writing!" << endl;
+void fileCreate(const string &fileName)
+{
+    ofstream file(fileName + ".txt");
+
+    if (file)
+    {
+        cout << "File created successfully." << endl;
+        cout << "File name: " << fileName << ".txt" << endl;
         return;
     }
 
-    cout << "File has been successfully created!" << endl;
-    cout << "Filename is " << fileName << ".mdb" << endl;
+    else
+    {
+        cout << "Error creating file." << endl;
+    }
+
     file.close();
 }
 
-void tableCreate(const string& fileName) {
-    
+void tableCreate(const string &fileName)
+{
+
     ofstream inputfile;
-    inputfile.open(fileName + ".mdb", ios::app); 
-    if (!inputfile.is_open()) {
+    inputfile.open(fileName + ".mdb", ios::app);
+    if (!inputfile.is_open())
+    {
         cout << "Error!" << endl;
         return;
     }
@@ -92,20 +100,19 @@ void tableCreate(const string& fileName) {
 
     inputfile << "Table: " << tableName << endl;
     inputfile << "----------------------------------------------------------------------------------------------------------------------------" << endl;
-    inputfile << left << setw(5) << "ID" 
-              << setw(20) << "Name" 
+    inputfile << left << setw(5) << "ID"
+              << setw(20) << "Name"
               << setw(20) << "City"
-              << setw(20) << "State" 
-              << setw(20) << "Country" 
+              << setw(20) << "State"
+              << setw(20) << "Country"
               << setw(20) << "Phone"
               << setw(20) << "Email" << endl;
-
 
     int numCustomer;
     cout << "Please enter the number of customers: " << endl;
     cin >> numCustomer;
 
-    for (int id = 1; id <= numCustomer; id++) 
+    for (int id = 1; id <= numCustomer; id++)
     {
         cout << "Please enter name " << id << ": " << endl;
         cin >> ctm_name;
@@ -125,11 +132,11 @@ void tableCreate(const string& fileName) {
         cout << "Please enter email " << id << ": " << endl;
         cin >> ctm_email;
 
-        inputfile << left << setw(5) << id 
-                  << setw(20) << ctm_name 
+        inputfile << left << setw(5) << id
+                  << setw(20) << ctm_name
                   << setw(20) << ctm_city
-                  << setw(20) << ctm_state 
-                  << setw(20) << ctm_country 
+                  << setw(20) << ctm_state
+                  << setw(20) << ctm_country
                   << setw(20) << ctm_phone
                   << setw(20) << ctm_email << endl;
     }
@@ -143,18 +150,19 @@ void tableCreate(const string& fileName) {
     cin.get();
 }
 
-void fileOpen(const string& fileName) {
-    
+void fileOpen(const string &fileName)
+{
+
     ifstream infile;
     infile.open(fileName + ".mdb");
-    if (!infile.is_open()) 
+    if (!infile.is_open())
     {
         cout << "Error opening file for reading!" << endl;
         return;
     }
 
     string line;
-    while (getline(infile, line)) 
+    while (getline(infile, line))
     {
         cout << line << endl;
     }
@@ -166,39 +174,42 @@ void fileOpen(const string& fileName) {
     cin.get();
 }
 
-void displayContent(const string& fileName) {
+void displayContent(const string &fileName)
+{
     ifstream inputFile;
     inputFile.open(fileName + ".mdb");
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         cout << "Error opening file for reading!" << endl;
         return;
     }
 
     string line;
-    while (getline(inputFile, line)) {
+    while (getline(inputFile, line))
+    {
         cout << line << endl;
     }
 
     inputFile.close();
 }
 
-void secondOption(const string& fileName) {
+void secondOption(const string &fileName)
+{
 
     while (true)
     {
-    
-    int option;
-    cout << "Choose an option:" << endl;
-    cout << "1. Delete" << endl;
-    cout << "2. Update" << endl;
-    cout << "3. Count" << endl;
-    cout << "4. Insert a new row" << endl;
-    cout << "5. Exit" << endl;
-    cout << "6. Back to previous page" << endl;
-    cin >> option;
 
-    
-        switch (option) 
+        int option;
+        cout << "Choose an option:" << endl;
+        cout << "1. Delete" << endl;
+        cout << "2. Update" << endl;
+        cout << "3. Count" << endl;
+        cout << "4. Insert a new row" << endl;
+        cout << "5. Exit" << endl;
+        cout << "6. Back to previous page" << endl;
+        cin >> option;
+
+        switch (option)
         {
         case 1:
             fileDelete(fileName);
@@ -225,23 +236,23 @@ void secondOption(const string& fileName) {
 
         default:
             cout << "Invalid option, please try again!" << endl;
-
-    }
+        }
     }
 }
 
-void fileUpdate(const string& fileName) {
-    
+void fileUpdate(const string &fileName)
+{
+
     ifstream infile;
     infile.open(fileName + ".mdb");
-    ofstream  tempfile;
+    ofstream tempfile;
     tempfile.open("temp.mdb");
 
     string line;
     int id;
     string field, newValue;
 
-    if (!infile.is_open()) 
+    if (!infile.is_open())
     {
         cout << "Error opening file!" << endl;
         return;
@@ -261,34 +272,40 @@ void fileUpdate(const string& fileName) {
     getline(infile, line);
     tempfile << line << endl;
 
-    while (getline(infile, line)) 
+    while (getline(infile, line))
     {
         int currentID;
         stringstream ss(line);
         ss >> currentID;
 
-        if (currentID == id) 
+        if (currentID == id)
         {
             ss >> ctm_name >> ctm_city >> ctm_state >> ctm_country >> ctm_phone >> ctm_email;
 
-            if (field == "Name" || field == "name") ctm_name = newValue;
-            else if (field == "City" || field == "city") ctm_city = newValue;
-            else if (field == "State" || field == "state") ctm_state = newValue;
-            else if (field == "Country" || field == "country") ctm_country = newValue;
-            else if (field == "Phone" || field == "phone") ctm_phone = newValue;
-            else if (field == "Email" || field == "email") ctm_email = newValue;
-            else 
+            if (field == "Name" || field == "name")
+                ctm_name = newValue;
+            else if (field == "City" || field == "city")
+                ctm_city = newValue;
+            else if (field == "State" || field == "state")
+                ctm_state = newValue;
+            else if (field == "Country" || field == "country")
+                ctm_country = newValue;
+            else if (field == "Phone" || field == "phone")
+                ctm_phone = newValue;
+            else if (field == "Email" || field == "email")
+                ctm_email = newValue;
+            else
                 cout << "Error, please try again!" << endl;
 
-            tempfile << left << setw(5) << currentID 
-                     << setw(20) << ctm_name 
+            tempfile << left << setw(5) << currentID
+                     << setw(20) << ctm_name
                      << setw(20) << ctm_city
-                     << setw(20) << ctm_state 
-                     << setw(20) << ctm_country 
+                     << setw(20) << ctm_state
+                     << setw(20) << ctm_country
                      << setw(20) << ctm_phone
                      << setw(30) << ctm_email << endl;
-        } 
-        else 
+        }
+        else
         {
             tempfile << line << endl;
         }
@@ -308,12 +325,14 @@ void fileUpdate(const string& fileName) {
     cin.get();
 }
 
-void fileDelete(const string& fileName) {
+void fileDelete(const string &fileName)
+{
     string tempFile = "temp.mdb";
     ifstream infile(fileName + ".mdb");
     ofstream outfile(tempFile);
 
-    if (!infile.is_open()) {
+    if (!infile.is_open())
+    {
         cout << "File does not exist or cannot be opened!" << endl;
         cout << "Press any key to continue..." << endl;
         cin.get();
@@ -332,18 +351,24 @@ void fileDelete(const string& fileName) {
     int choice;
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == 1)
+    {
         // 1. Delete the entire file
         infile.close();
-        if (remove((fileName + ".mdb").c_str()) == 0) {
+        if (remove((fileName + ".mdb").c_str()) == 0)
+        {
             cout << "File \"" << fileName << ".mdb\" deleted successfully!" << endl;
-        } else {
+        }
+        else
+        {
             cout << "Error: file not found or could not be deleted!" << endl;
         }
     }
-    else if (choice == 2) {
+    else if (choice == 2)
+    {
         // 2. Delete a specific record by ID and RE-NUMBER
-        if (!outfile.is_open()) {
+        if (!outfile.is_open())
+        {
             cout << "Error creating temporary file!" << endl;
             infile.close();
             return;
@@ -351,8 +376,10 @@ void fileDelete(const string& fileName) {
 
         // Copy the first three lines (table name, separator, headers) directly
         string line;
-        for(int i = 0; i < 3; ++i) {
-            if (getline(infile, line)) {
+        for (int i = 0; i < 3; ++i)
+        {
+            if (getline(infile, line))
+            {
                 outfile << line << endl;
             }
         }
@@ -364,8 +391,10 @@ void fileDelete(const string& fileName) {
         bool found = false;
         int currentID = 1; // We'll re-number from 1 onwards
 
-        while (getline(infile, line)) {
-            if (line.empty()) continue;
+        while (getline(infile, line))
+        {
+            if (line.empty())
+                continue;
 
             // Parse the old ID from the start of the line
             stringstream ss(line);
@@ -373,9 +402,10 @@ void fileDelete(const string& fileName) {
             ss >> oldID;
 
             // If this record is the one to delete, skip it
-            if (oldID == deleteID) {
+            if (oldID == deleteID)
+            {
                 found = true;
-                continue; 
+                continue;
             }
 
             // Otherwise re-number the ID to 'currentID'
@@ -384,7 +414,7 @@ void fileDelete(const string& fileName) {
             // 'restOfLine' will contain everything after the old ID
             getline(ss, restOfLine);
 
-            // Now reconstruct the line: 
+            // Now reconstruct the line:
             // new ID + the rest of the fields
             ostringstream newLine;
             newLine << left << setw(5) << currentID << restOfLine;
@@ -397,13 +427,16 @@ void fileDelete(const string& fileName) {
         infile.close();
         outfile.close();
 
-        if (found) {
+        if (found)
+        {
             // Replace the original file with the temp file
-            if (remove((fileName + ".mdb").c_str()) != 0) {
+            if (remove((fileName + ".mdb").c_str()) != 0)
+            {
                 cout << "Unable to delete the original file!" << endl;
                 return;
             }
-            if (rename(tempFile.c_str(), (fileName + ".mdb").c_str()) != 0) {
+            if (rename(tempFile.c_str(), (fileName + ".mdb").c_str()) != 0)
+            {
                 cout << "Unable to rename the temporary file!" << endl;
                 return;
             }
@@ -411,32 +444,41 @@ void fileDelete(const string& fileName) {
             // Now check if file has any data (besides the 3 header lines)
             ifstream checkFile(fileName + ".mdb");
             int lineCount = 0;
-            while (getline(checkFile, line)) {
-                if (!line.empty()) lineCount++;
+            while (getline(checkFile, line))
+            {
+                if (!line.empty())
+                    lineCount++;
             }
             checkFile.close();
 
             // If only the 3 header lines remain, remove the file entirely
-            if (lineCount <= 3) {
+            if (lineCount <= 3)
+            {
                 remove((fileName + ".mdb").c_str());
                 cout << "Record deleted. The file is now empty and has been removed." << endl;
-            } else {
+            }
+            else
+            {
                 cout << "Record with ID " << deleteID << " deleted and IDs re-numbered!" << endl;
                 // Show updated file
                 displayContent(fileName);
             }
-        } else {
+        }
+        else
+        {
             // The requested ID wasn't found
             remove(tempFile.c_str());
             cout << "Record not found." << endl;
         }
     }
-    else if (choice == 3) {
+    else if (choice == 3)
+    {
         // 3. Back to previous menu
         infile.close();
         return;
     }
-    else {
+    else
+    {
         cout << "Invalid choice! Please select 1, 2, or 3." << endl;
     }
 
@@ -444,29 +486,32 @@ void fileDelete(const string& fileName) {
     cin.get();
 }
 
-void fileCount(const string& fileName) {
+void fileCount(const string &fileName)
+{
     ifstream infile;
     infile.open(fileName + ".mdb");
     string line;
 
     int count = 0;
 
-    if (!infile.is_open()) 
+    if (!infile.is_open())
     {
         cout << "Error opening file!" << endl;
         return;
     }
 
-    for (int i = 0; i < 3; ++i) {
-        if (!getline(infile, line)) {
+    for (int i = 0; i < 3; ++i)
+    {
+        if (!getline(infile, line))
+        {
 
             break;
         }
     }
-    while (getline(infile, line)) 
+    while (getline(infile, line))
     {
-        if (!line.empty()) 
-        { 
+        if (!line.empty())
+        {
             count++;
         }
     }
@@ -480,11 +525,12 @@ void fileCount(const string& fileName) {
     cin.get();
 }
 
-void insertNewRow( const string& fileName) {
-    
+void insertNewRow(const string &fileName)
+{
+
     ifstream file;
     file.open(fileName + ".mdb", ios::in); // Open file in read mode
-    if (!file.is_open()) 
+    if (!file.is_open())
     {
         cout << "Error opening file!" << endl;
         return;
@@ -493,9 +539,9 @@ void insertNewRow( const string& fileName) {
     // Find the next ID
     int id = 1;
     string line, lastLine;
-    while (getline(file, line)) 
+    while (getline(file, line))
     {
-        if (!line.empty()) 
+        if (!line.empty())
         {
             lastLine = line;
             stringstream ss(lastLine);
@@ -508,7 +554,7 @@ void insertNewRow( const string& fileName) {
 
     // Re-open file in append mode to add new row
     ofstream outFile(fileName + ".mdb", ios::out | ios::app);
-    if (!outFile.is_open()) 
+    if (!outFile.is_open())
     {
         cout << "Error opening file!" << endl;
         return;
@@ -529,11 +575,11 @@ void insertNewRow( const string& fileName) {
     cin >> ctm_email;
 
     // Append new row to file
-    outFile << left << setw(5) << id 
-            << setw(20) << ctm_name 
+    outFile << left << setw(5) << id
+            << setw(20) << ctm_name
             << setw(20) << ctm_city
-            << setw(20) << ctm_state 
-            << setw(20) << ctm_country 
+            << setw(20) << ctm_state
+            << setw(20) << ctm_country
             << setw(20) << ctm_phone
             << setw(30) << ctm_email << endl;
 
