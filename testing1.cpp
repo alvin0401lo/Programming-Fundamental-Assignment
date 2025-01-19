@@ -9,18 +9,18 @@ using namespace std;
 
 // Global variables to store table data
 vector<vector<string>> tableData; // Table data (each row is a vector<string>)
-vector<string> columnHeaders;    // Table column headers
+vector<string> columnHeaders;     // Table column headers
 
 // Function declarations
-void fileCreate(const string&);
-void tableCreate(const string&);
-void displayContent(const string&);
-void fileOpen(const string&);
-void secondOption(const string&);
-void fileUpdate(const string&);
-void fileDelete(const string&);
-void fileCount(const string&);
-void insertNewRow(const string&);
+void fileCreate(const string &);
+void tableCreate(const string &);
+void displayContent(const string &);
+void fileOpen(const string &);
+void secondOption(const string &);
+void fileUpdate(const string &);
+void fileDelete(const string &);
+void fileCount(const string &);
+void insertNewRow(const string &);
 
 int main()
 {
@@ -41,7 +41,7 @@ int main()
         {
         case 1:
             // Create a new file
-            cout << "Please enter the file name: ";
+            cout << "Please enter the file name (no extension needed like .txt): ";
             cin >> fileName;
             fileCreate(fileName);
             tableCreate(fileName);
@@ -50,7 +50,7 @@ int main()
 
         case 2:
             // Open an existing file
-            cout << "Please enter the file name: ";
+            cout << "Please enter the file name (no extension needed like .mdb): ";
             cin >> fileName;
             fileOpen(fileName);
             secondOption(fileName);
@@ -70,35 +70,35 @@ int main()
 }
 
 // Check if a file exists and create a new file
-void fileCreate(const string& fileName)
+void fileCreate(const string &fileName)
 {
-    ifstream existingFile(fileName + ".mdb");
+    ifstream existingFile(fileName + ".txt");
     if (existingFile.is_open())
     {
-        cout << "Error: File \"" << fileName << ".mdb\" already exists!" << endl;
+        cout << "Error: File \"" << fileName << ".txt\" already exists!" << endl;
         existingFile.close();
         return;
     }
 
-    ofstream file(fileName + ".mdb");
+    ofstream file(fileName + ".txt");
     if (!file.is_open())
     {
         cout << "Error opening file for writing!" << endl;
         return;
     }
 
-    cout << "File \"" << fileName << ".mdb\" has been successfully created!" << endl;
+    cout << "File \"" << fileName << ".txt\" has been successfully created!" << endl;
     file.close();
-        
+
     cout << "Press any key to continue..." << endl;
     cin.ignore();
     cin.get();
 }
 
 // Create a table and save data to the file
-void tableCreate(const string& fileName)
+void tableCreate(const string &fileName)
 {
-    ofstream inputfile(fileName + ".mdb");
+    ofstream inputfile(fileName + ".txt");
     if (!inputfile.is_open())
     {
         cout << "Error! Cannot open file for writing!" << endl;
@@ -128,7 +128,7 @@ void tableCreate(const string& fileName)
     // Write table header to the file
     inputfile << "Table: " << tableName << endl;
     inputfile << string(100, '-') << endl;
-    for (const auto& col : columnHeaders)
+    for (const auto &col : columnHeaders)
     {
         inputfile << left << setw(20) << col;
     }
@@ -157,7 +157,7 @@ void tableCreate(const string& fileName)
         tableData.push_back(rowData);
 
         // Write each row to the file
-        for (const auto& value : rowData)
+        for (const auto &value : rowData)
         {
             inputfile << left << setw(20) << value;
         }
@@ -165,7 +165,7 @@ void tableCreate(const string& fileName)
     }
 
     inputfile.close();
-    cout << "Table \"" << tableName << "\" created and saved in \"" << fileName << ".mdb\"!" << endl;
+    cout << "Table \"" << tableName << "\" created and saved in \"" << fileName << ".txt\"!" << endl;
 
     displayContent(fileName);
 
@@ -175,7 +175,7 @@ void tableCreate(const string& fileName)
 }
 
 // Open an existing file and load its content
-void fileOpen(const string& fileName)
+void fileOpen(const string &fileName)
 {
     ifstream infile(fileName + ".mdb");
     if (!infile.is_open())
@@ -235,7 +235,7 @@ void fileOpen(const string& fileName)
 
         // Debug: Print the parsed row
         cout << "Debug: Parsed row - ";
-        for (const auto& val : rowData)
+        for (const auto &val : rowData)
         {
             cout << val << " ";
         }
@@ -255,19 +255,19 @@ void fileOpen(const string& fileName)
 }
 
 // Display table content
-void displayContent(const string& fileName)
+void displayContent(const string &fileName)
 {
     cout << "\nTable Content from \"" << fileName << ".mdb\":\n";
-    for (const auto& col : columnHeaders)
+    for (const auto &col : columnHeaders)
     {
         cout << left << setw(20) << col;
     }
     cout << endl;
     cout << string(100, '-') << endl;
 
-    for (const auto& row : tableData)
+    for (const auto &row : tableData)
     {
-        for (const auto& value : row)
+        for (const auto &value : row)
         {
             cout << left << setw(20) << value;
         }
@@ -276,7 +276,7 @@ void displayContent(const string& fileName)
 }
 
 // Delete a specific row or the entire file
-void fileDelete(const string& fileName)
+void fileDelete(const string &fileName)
 {
     displayContent(fileName);
 
@@ -309,22 +309,22 @@ void fileDelete(const string& fileName)
         }
 
         // Write updated table data to the file
-        ofstream outfile(fileName + ".mdb");
+        ofstream outfile(fileName + ".txt");
         if (!outfile.is_open())
         {
             cout << "Error writing to file!" << endl;
             return;
         }
 
-        for (const auto& col : columnHeaders)
+        for (const auto &col : columnHeaders)
         {
             outfile << left << setw(20) << col;
         }
         outfile << endl;
 
-        for (const auto& row : tableData)
+        for (const auto &row : tableData)
         {
-            for (const auto& value : row)
+            for (const auto &value : row)
             {
                 outfile << left << setw(20) << value;
             }
@@ -337,9 +337,9 @@ void fileDelete(const string& fileName)
     else if (choice == 2)
     {
         // Delete the entire file
-        if (remove((fileName + ".mdb").c_str()) == 0)
+        if (remove((fileName + ".txt").c_str()) == 0)
         {
-            cout << "File \"" << fileName << ".mdb\" has been deleted!" << endl;
+            cout << "File \"" << fileName << ".txt\" has been deleted!" << endl;
             tableData.clear();
             columnHeaders.clear();
         }
@@ -359,7 +359,7 @@ void fileDelete(const string& fileName)
 }
 
 // Count the number of rows in the table
-void fileCount(const string&)
+void fileCount(const string &)
 {
     cout << "The number of rows in the table: " << tableData.size() << endl;
 
@@ -369,7 +369,7 @@ void fileCount(const string&)
 }
 
 // Update specific fields in the table
-void fileUpdate(const string& fileName)
+void fileUpdate(const string &fileName)
 {
     displayContent(fileName);
 
@@ -399,7 +399,7 @@ void fileUpdate(const string& fileName)
         return;
     }
 
-    for (auto& row : tableData)
+    for (auto &row : tableData)
     {
         if (row[columnIndex] == oldValue)
         {
@@ -407,22 +407,22 @@ void fileUpdate(const string& fileName)
         }
     }
 
-    ofstream outfile(fileName + ".mdb");
+    ofstream outfile(fileName + ".txt");
     if (!outfile.is_open())
     {
         cout << "Error writing to file!" << endl;
         return;
     }
 
-    for (const auto& col : columnHeaders)
+    for (const auto &col : columnHeaders)
     {
         outfile << left << setw(20) << col;
     }
     outfile << endl;
 
-    for (const auto& row : tableData)
+    for (const auto &row : tableData)
     {
-        for (const auto& value : row)
+        for (const auto &value : row)
         {
             outfile << left << setw(20) << value;
         }
@@ -438,7 +438,7 @@ void fileUpdate(const string& fileName)
 }
 
 // Insert a new row into the table
-void insertNewRow(const string& fileName)
+void insertNewRow(const string &fileName)
 {
     vector<string> newRow;
     if (columnHeaders.empty())
@@ -460,14 +460,14 @@ void insertNewRow(const string& fileName)
 
     tableData.push_back(newRow);
 
-    ofstream outfile(fileName + ".mdb", ios::app);
+    ofstream outfile(fileName + ".txt", ios::app);
     if (!outfile.is_open())
     {
         cout << "Error writing to file!" << endl;
         return;
     }
 
-    for (const auto& value : newRow)
+    for (const auto &value : newRow)
     {
         outfile << left << setw(20) << value;
     }
@@ -482,7 +482,7 @@ void insertNewRow(const string& fileName)
 }
 
 // Menu for table operations
-void secondOption(const string& fileName)
+void secondOption(const string &fileName)
 {
     while (true)
     {
