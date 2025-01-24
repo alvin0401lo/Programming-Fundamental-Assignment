@@ -17,8 +17,8 @@ void displayContent(const string &);
 void openFile(const string &);
 void secondOption(const string &);
 void fileUpdate(const string &);
-void fileDelete(const string &);
-void fileCount();
+void deleteRow(const string &);
+void countRow();
 void insertNewRow(const string &);
 
 int main()
@@ -277,6 +277,7 @@ void openFile(const string &fileName)
     // Display the content of the newly created .txt file
     displayContent(fileName);
 }
+
 void secondOption(const string &fileName)
 {
     int option;
@@ -297,7 +298,7 @@ void secondOption(const string &fileName)
         {
         case 1:
             // Option 1: Delete a specific row
-            fileDelete(fileName);
+            deleteRow(fileName);
             break;
         case 2:
             // Option 2: Update a specific field in the table
@@ -305,7 +306,7 @@ void secondOption(const string &fileName)
             break;
         case 3:
             // Option 3: Count the number of rows in the table
-            fileCount();
+            countRow();
             break;
         case 4:
             // Option 4: Insert a new row into the table
