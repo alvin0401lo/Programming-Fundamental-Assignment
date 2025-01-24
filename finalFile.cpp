@@ -278,6 +278,7 @@ void openFile(const string &fileName)
     displayContent(fileName);
 }
 
+// Menu for table operations
 void secondOption(const string &fileName)
 {
     int option;
@@ -550,5 +551,3 @@ void insertNewRow(const string &fileName)
     cin.ignore(); // Clear the input buffer
     cin.get();    // Wait for user input
 }
-
-// Menu for table operations
