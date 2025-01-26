@@ -4,11 +4,12 @@
 #include <string>
 #include <vector>
 #include <cctype>
+
 using namespace std;
 
 //Represents a table structure, containing column definitions and row data.
 struct Table {
-    vector<string> columnDefinitions; // e.g. ["id int", "name text)"]
+    vector<string> columnDefinitions;
     vector<vector<string>> data;      // Each element is a row (vector<string>)
 };
 
@@ -163,12 +164,12 @@ and splits on ';'. Returns a vector of trimmed commands (strings).
 }
 
 string trim(const string &str) {
-/*
-Removes leading and trailing whitespace characters (" \t\r\n").
-*/
+
+    //Removes leading and trailing whitespace characters (" \t\r\n").
     if (str.empty())
         return str;
         size_t first = str.find_first_not_of(" \t\r\n");
+
     if (first == string::npos)
         return "";
         size_t last  = str.find_last_not_of(" \t\r\n");
@@ -182,7 +183,7 @@ void appendToFile(const string &filename, const string &content) {
     ofstream ofs;
     ofs.open(filename, ios::app);
     if (!ofs.is_open()) {
-        cerr << "Error: Unable to write to file " << filename << endl;
+        cout << "Error: Unable to write to file " << filename << endl;
         exit(1);
     }
     ofs << content;
@@ -262,7 +263,7 @@ void handleDatabasesCmd(string &cmd) {
         }
     else
         {
-            g_databasePath = "(no path provided)";
+            g_databasePath = "Error! no path provided";
         }
     }
 
@@ -323,7 +324,7 @@ void createTable(const string &command) {
         cerr << "Error: invalid CREATE TABLE format." << endl;
         return;
         }
-    // "CREATE TABLE " length is 12
+    // "CREATE TABLE " length is 10
     string tableName = trim(command.substr(12, start - 12));
     // Extract columns between parentheses
     string cols = command.substr(start + 1, end - (start + 1));
@@ -355,12 +356,12 @@ void createTable(const string &command) {
 void insertIntoTable(const string &command) {
 
     // Static variables for counting
-    static bool s_inited = false;         // True if we've already counted total inserts
-    static int  s_totalInserts = 0;       // How many "INSERT" commands are in the .mdb file
-    static int  s_currentInserts = 0;     // How many inserts we've actually processed
+    static bool initialized = false;         // True if we've already counted total inserts
+    static int  totalInserts = 0;       // How many "INSERT" commands are in the .mdb file
+    static int  currentInserts = 0;     // How many inserts we've actually processed
 
     // On the first call, read the entire .mdb file again
-    if (!s_inited) {
+    if (!initialized) {
         // Use the same path the user entered at runtime, stored in g_databasePath.
         vector<string> allCommands = readMdbFile(g_databasePath);
 
@@ -371,11 +372,11 @@ void insertIntoTable(const string &command) {
                 c = toupper(c);
             }
             if (upper.find("INSERT INTO") != string::npos) {
-                s_totalInserts++;
+                totalInserts++;
             }
         }
 
-        s_inited = true; // We won't do this check again
+        initialized = true; // We won't do this check again
     }
 
     //Regular insert logic
@@ -388,7 +389,7 @@ void insertIntoTable(const string &command) {
     size_t intoPos = command.find("INTO");
     size_t valPos  = command.find("VALUES");
     if (intoPos == string::npos || valPos == string::npos) {
-        cerr << "Error: invalid INSERT syntax." << endl;
+        cout << "Error: invalid INSERT syntax." << endl;
         return;
     }
 
@@ -399,7 +400,7 @@ void insertIntoTable(const string &command) {
 
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found -> " << tableName << endl;
+        cout << "Error: Table not found -> " << tableName << endl;
         return;
     }
 
@@ -407,7 +408,7 @@ void insertIntoTable(const string &command) {
     size_t lp = command.find("(", valPos);
     size_t rp = command.find(")", lp);
     if (lp == string::npos || rp == string::npos) {
-        cerr << "Error: INSERT missing parentheses." << endl;
+        cout << "Error: INSERT missing parentheses." << endl;
         return;
     }
 
@@ -425,10 +426,10 @@ void insertIntoTable(const string &command) {
     g_tables[idx].table.data.push_back(row);
 
     //Increment our current insert count
-    s_currentInserts++;
+    currentInserts++;
 
     // If this is the final insert (comparing to total), print the table
-    if (s_currentInserts == s_totalInserts && s_totalInserts > 0) {
+    if (currentInserts == totalInserts && totalInserts > 0) {
         // Create a pseudo "SELECT * FROM tableName;" for clarity
         ostringstream oss;
         oss << "> SELECT * FROM " << tableName << ";" << endl;
@@ -462,7 +463,6 @@ void insertIntoTable(const string &command) {
     }
 }
 
-
 void updateTable(const string &command) {
     /*
      Extracts the table name from "UPDATE tableName SET ... WHERE ...",
@@ -481,7 +481,7 @@ void updateTable(const string &command) {
     size_t wherePos  = command.find("WHERE");
     if (updatePos == string::npos || setPos == string::npos || wherePos == string::npos)
         {
-        cerr << "Error: invalid UPDATE syntax." << endl;
+        cout << "Error: invalid UPDATE syntax." << endl;
         return;
         }
 
@@ -490,7 +490,7 @@ void updateTable(const string &command) {
     int idx = findTableIndex(tableName);
     if (idx < 0)
         {
-        cerr << "Error: Table not found -> " << tableName << endl;
+        cout << "Error: Table not found > " << tableName << endl;
         return;
         }
 
@@ -502,7 +502,7 @@ void updateTable(const string &command) {
     size_t eq = setClause.find("=");
     if (eq == string::npos)
         {
-        cerr << "Error: invalid SET clause." << endl;
+        cout << "Error: invalid SET clause." << endl;
         return;
         }
 
@@ -511,7 +511,7 @@ void updateTable(const string &command) {
 
     eq = whereClause.find("=");
     if (eq == string::npos) {
-        cerr << "Error: invalid WHERE clause." << endl;
+        cout << "Error: invalid WHERE clause." << endl;
         return;
     }
 
@@ -529,7 +529,7 @@ void updateTable(const string &command) {
         if (cName == wCol)   wIdx = i;
     }
     if (setIdx < 0 || wIdx < 0) {
-        cerr << "Error: column not found in table." << endl;
+        cout << "Error: column not found in table." << endl;
         return;
     }
 
@@ -576,14 +576,14 @@ void deleteFromTable(const string &command) {
     size_t fromPos  = command.find("FROM");
     size_t wherePos = command.find("WHERE");
     if (fromPos == string::npos || wherePos == string::npos) {
-        cerr << "Error: invalid DELETE syntax." << endl;
+        cout << "Error: invalid DELETE syntax." << endl;
         return;
     }
     // Extract table name
     string tableName = trim(command.substr(fromPos + 4, wherePos - (fromPos + 4)));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found->" << tableName << endl;
+        cout << "Error: Table not found->" << tableName << endl;
         return;
     }
 
@@ -591,7 +591,7 @@ void deleteFromTable(const string &command) {
     string wClause = trim(command.substr(wherePos + 5));
     size_t eq = wClause.find("=");
     if (eq == string::npos) {
-        cerr << "Error: invalid WHERE clause." << endl;
+        cout << "Error: invalid WHERE clause." << endl;
         return;
     }
     string wCol = trim(wClause.substr(0, eq));
@@ -609,7 +609,7 @@ void deleteFromTable(const string &command) {
         }
     }
     if (wIndex < 0) {
-        cerr << "Error: column not found." << endl;
+        cout << "Error: column not found." << endl;
         return;
     }
 
@@ -656,13 +656,13 @@ void selectAll(const string &command) {
 
     size_t fromPos = command.find("FROM");
     if (fromPos == string::npos) {
-        cerr << "Error: invalid SELECT syntax." << endl;
+        cout << "Error: invalid SELECT syntax." << endl;
         return;
     }
     string tableName = trim(command.substr(fromPos + 4));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found." << endl;
+        cout << "Error: Table not found." << endl;
         return;
     }
     auto &colDefs = g_tables[idx].table.columnDefinitions;
@@ -701,13 +701,13 @@ void countRows(const string &command) {
 
     size_t fromPos = command.find("FROM");
     if (fromPos == string::npos) {
-        cerr << "Error: invalid COUNT syntax." << endl;
+        cout << "Error: invalid COUNT syntax." << endl;
         return;
     }
     string tableName = trim(command.substr(fromPos + 4));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found." << endl;
+        cout << "Error: Table not found." << endl;
         return;
     }
 
