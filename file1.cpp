@@ -51,23 +51,23 @@ void insertIntoTable(const string &);
 
 //Updates rows in a specified table, e.g.:
 //UPDATE tableName SET col = val WHERE col = val;
-void updateTable(const string &command);
+void updateTable(const string &);
 
 //Deletes rows from a specified table,
 //DELETE FROM tableName WHERE col = val;
-void deleteFromTable(const string &command);
+void deleteFromTable(const string &);
 
 //Selects all rows from a table:
 //SELECT * FROM tableName;
-void selectAll(const string &command);
+void selectAll(const string &);
 
 //Counts the number of rows in a table:
 //SELECT COUNT(*) FROM tableName;
-void countRows(const string &command);
+void countRows(const string &);
 
 //Finds the index of a table in g_tables by name,
 //or returns -1 if not found.
-int findTableIndex(const string &tableName);
+int findTableIndex(const string &);
 
 int main() {
     cout << "Enter the .mdb file path: ";
@@ -122,10 +122,10 @@ int main() {
 }
 
 vector<string> readMdbFile(const string &filename) {
-    /**
-     * Reads the file line by line, concatenates them into `current`,
-     * and splits on ';'. Returns a vector of trimmed commands (strings).
-     */
+/*
+Reads the file line by line, concatenates them into `current`,
+and splits on ';'. Returns a vector of trimmed commands (strings).
+*/
     vector<string> commands;
     ifstream fin(filename);
     if (!fin.is_open()) {
@@ -163,20 +163,21 @@ vector<string> readMdbFile(const string &filename) {
 }
 
 string trim(const string &str) {
-    /**
-     * Removes leading and trailing whitespace characters (" \t\r\n").
-     */
-    if (str.empty()) return str;
-    size_t first = str.find_first_not_of(" \t\r\n");
-    if (first == string::npos) return "";
-    size_t last  = str.find_last_not_of(" \t\r\n");
-    return str.substr(first, (last - first + 1));
+/*
+Removes leading and trailing whitespace characters (" \t\r\n").
+*/
+    if (str.empty())
+        return str;
+        size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == string::npos)
+        return "";
+        size_t last  = str.find_last_not_of(" \t\r\n");
+        return str.substr(first, (last - first + 1));
 }
 
 void appendToFile(const string &filename, const string &content) {
-    /**
-     * Opens file in append mode and writes `content` to it.
-     */
+
+    //Opens file in append mode and writes `content` to it.
     cout << content;
     ofstream ofs(filename, ios::app);
     if (!ofs.is_open()) {
@@ -188,11 +189,12 @@ void appendToFile(const string &filename, const string &content) {
 }
 
 int findTableIndex(const string &tableName) {
-    /**
-     * Looks through g_tables to find the index of a TableRecord
-     * whose name matches `tableName`.
-     * Returns the index if found, otherwise returns -1.
-     */
+
+    /*
+     Looks through g_tables to find the index of a TableRecord
+     whose name matches `tableName`.
+     Returns the index if found, otherwise returns -1.
+    */
     for (int i = 0; i < (int)g_tables.size(); i++) {
         if (g_tables[i].name == tableName) {
             return i;
@@ -202,10 +204,10 @@ int findTableIndex(const string &tableName) {
 }
 
 void handleCreateFile(const string &command) {
-    /**
-     * Extracts the file name after "CREATE " and before the semicolon,
-     * sets it as the global output file, and creates (or overwrites) that file.
-     * Also appends the command line to the output file.
+    /*
+     Extracts the file name after "CREATE " and before the semicolon,
+     sets it as the global output file, and creates (or overwrites) that file.
+     Also appends the command line to the output file.
      */
     string cmd = trim(command);
     if (!cmd.empty() && cmd[0] == '>') {
@@ -214,14 +216,16 @@ void handleCreateFile(const string &command) {
     }
 
     size_t pos = cmd.find("CREATE ");
-    if (pos != string::npos) {
+    if (pos != string::npos)
+        {
         cmd = trim(cmd.substr(pos + 7));
-    }
+        }
 
     // Remove trailing semicolon if present
-    if (!cmd.empty() && cmd.back() == ';') {
+    if (!cmd.empty() && cmd.back() == ';')
+        {
         cmd.pop_back();
-    }
+        }
     cmd = trim(cmd);
 
     g_outputFile = cmd;
@@ -233,54 +237,59 @@ void handleCreateFile(const string &command) {
     ofs.close();
 
     ostringstream oss;
-    oss << "> " << command << ";\n";
+    oss << "> " << command << ";" << endl;
     appendToFile(g_outputFile, oss.str());
 }
 
 void handleDatabasesCmd(string &cmd) {
-    /**
-     * When encountering a "DATABASES;" command, we append the command line to the output,
-     * and set g_databasePath if there's text after "DATABASES;".
-     */
+    /*
+     When encountering a "DATABASES;" command, we append the command line to the output,
+     and set g_databasePath if there's text after "DATABASES;".
+    */
     {
         ostringstream oss;
-        oss << "> " << cmd << ";\n";
+        oss << "> " << cmd << ";" << endl;
         appendToFile(g_outputFile, oss.str());
     }
     size_t pos = cmd.find("DATABASES;");
-    if (pos != string::npos) {
+    if (pos != string::npos)
+        {
         string after = trim(cmd.substr(pos + 10));
         if (!after.empty()) {
             g_databasePath = after;
-        } else {
+        }
+    else
+        {
             g_databasePath = "(no path provided)";
         }
     }
 
     ostringstream oss;
-    oss << g_databasePath << "\n\n";
+    oss << g_databasePath << endl;
     appendToFile(g_outputFile, oss.str());
 }
 
 void createTable(const string &command) {
-    /**
-     * 1. First we format and print the CREATE TABLE command with indentation,
-     *    then remove trailing semicolon if present.
-     * 2. We parse the table name and column definitions,
-     *    and create (or overwrite) the table in g_tables.
-     */
+    /*
+     1. First we format and print the CREATE TABLE command with indentation,
+        then remove trailing semicolon if present.
+     2. We parse the table name and column definitions,
+        and create (or overwrite) the table in g_tables.
+    */
     ostringstream formattedCmd;
     string temp = command;
     bool hasSemicolon = false;
 
     // Check if the command ends with ';'
-    if (!temp.empty() && temp.back() == ';') {
+    if (!temp.empty() && temp.back() == ';')
+        {
         temp.pop_back();
         hasSemicolon = true;
-    }
+        }
 
     // Insert newlines and indentation around parentheses and commas
-    for (size_t i = 0; i < temp.size(); i++) {
+    for (size_t i = 0; i < temp.size(); i++)
+        {
         char c = temp[i];
         if (c == '(') {
             formattedCmd << "(\n    ";
@@ -292,24 +301,26 @@ void createTable(const string &command) {
             formattedCmd << c;
         }
     }
-    if (hasSemicolon) {
+    if (hasSemicolon)
+    {
         formattedCmd << ";";
     }
 
     {
         // Append the formatted CREATE TABLE command to the output file
         ostringstream oss;
-        oss << "> " << formattedCmd.str() << "\n";
+        oss << "> " << formattedCmd.str() << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     // Parse table name and column definitions
     size_t start = command.find("(");
     size_t end   = command.rfind(")");
-    if (start == string::npos || end == string::npos || end < start) {
-        cerr << "Error: invalid CREATE TABLE format.\n";
+    if (start == string::npos || end == string::npos || end < start)
+        {
+        cerr << "Error: invalid CREATE TABLE format." << endl;
         return;
-    }
+        }
     // "CREATE TABLE " length is 12
     string tableName = trim(command.substr(12, start - 12));
     // Extract columns between parentheses
@@ -340,40 +351,45 @@ void createTable(const string &command) {
 }
 
 void insertIntoTable(const string &command) {
-    /**
-     * Extracts table name from "INSERT INTO tableName ...",
-     * parses the VALUES(...) section, and appends a new row to the table.
-     */
+    /*
+     Extracts table name from "INSERT INTO tableName ...",
+     parses the VALUES(...) section, and appends a new row to the table.
+    */
     {
         ostringstream oss;
-        oss << "> " << command << ";\n";
+        oss << "> " << command << ";" << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     size_t intoPos = command.find("INTO");
     size_t valPos  = command.find("VALUES");
-    if (intoPos == string::npos || valPos == string::npos) {
-        cerr << "Error: invalid INSERT syntax.\n";
+    if (intoPos == string::npos || valPos == string::npos)
+        {
+        cerr << "Error: invalid INSERT syntax." << endl;
         return;
-    }
+        }
+
     // Extract substring: "tableName(...)" part
     string sub = trim(command.substr(intoPos + 4, valPos - (intoPos + 4)));
     size_t p = sub.find("(");
     string tableName = (p == string::npos) ? sub : trim(sub.substr(0, p));
 
     int idx = findTableIndex(tableName);
-    if (idx < 0) {
-        cerr << "Error: Table not found -> " << tableName << "\n";
+    if (idx < 0)
+        {
+        cerr << "Error: Table not found -> " << tableName << endl;
         return;
-    }
+        }
 
     // Find parentheses for VALUES
     size_t lp = command.find("(", valPos);
     size_t rp = command.find(")", lp);
-    if (lp == string::npos || rp == string::npos) {
-        cerr << "Error: INSERT missing parentheses.\n";
+    if (lp == string::npos || rp == string::npos)
+        {
+        cerr << "Error: INSERT missing parentheses." << endl;
         return;
-    }
+        }
+
     string valPart = command.substr(lp + 1, rp - (lp + 1));
     vector<string> row;
     {
@@ -387,33 +403,35 @@ void insertIntoTable(const string &command) {
 }
 
 void updateTable(const string &command) {
-    /**
-     * Extracts the table name from "UPDATE tableName SET ... WHERE ...",
-     * parses the SET clause, finds which column to update,
-     * parses the WHERE clause, finds which rows to update.
-     * Then appends the updated table's rows to the output.
+    /*
+     Extracts the table name from "UPDATE tableName SET ... WHERE ...",
+     parses the SET clause, finds which column to update,
+     parses the WHERE clause, finds which rows to update.
+     Then appends the updated table's rows to the output.
      */
     {
         ostringstream oss;
-        oss << "> " << command << ";\n";
+        oss << "> " << command << ";" << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     size_t updatePos = command.find("UPDATE");
     size_t setPos    = command.find("SET");
     size_t wherePos  = command.find("WHERE");
-    if (updatePos == string::npos || setPos == string::npos || wherePos == string::npos) {
-        cerr << "Error: invalid UPDATE syntax.\n";
+    if (updatePos == string::npos || setPos == string::npos || wherePos == string::npos)
+        {
+        cerr << "Error: invalid UPDATE syntax." << endl;
         return;
-    }
+        }
 
     // Extract table name
     string tableName = trim(command.substr(updatePos + 6, setPos - (updatePos + 6)));
     int idx = findTableIndex(tableName);
-    if (idx < 0) {
-        cerr << "Error: Table not found -> " << tableName << "\n";
+    if (idx < 0)
+        {
+        cerr << "Error: Table not found -> " << tableName << endl;
         return;
-    }
+        }
 
     // Extract "col = val" from "SET"
     string setClause   = trim(command.substr(setPos + 3, wherePos - (setPos + 3)));
@@ -421,18 +439,21 @@ void updateTable(const string &command) {
     string whereClause = trim(command.substr(wherePos + 5));
 
     size_t eq = setClause.find("=");
-    if (eq == string::npos) {
-        cerr << "Error: invalid SET clause.\n";
+    if (eq == string::npos)
+        {
+        cerr << "Error: invalid SET clause." << endl;
         return;
-    }
+        }
+
     string setCol = trim(setClause.substr(0, eq));
     string setVal = trim(setClause.substr(eq + 1));
 
     eq = whereClause.find("=");
     if (eq == string::npos) {
-        cerr << "Error: invalid WHERE clause.\n";
+        cerr << "Error: invalid WHERE clause." << endl;
         return;
     }
+
     string wCol = trim(whereClause.substr(0, eq));
     string wVal = trim(whereClause.substr(eq + 1));
 
@@ -447,7 +468,7 @@ void updateTable(const string &command) {
         if (cName == wCol)   wIdx = i;
     }
     if (setIdx < 0 || wIdx < 0) {
-        cerr << "Error: column not found in table.\n";
+        cerr << "Error: column not found in table." << endl;
         return;
     }
 
@@ -460,48 +481,48 @@ void updateTable(const string &command) {
 
     // Print updated table to output
     ostringstream oss;
-    oss << "> SELECT * FROM " << tableName << ";\n";
+    oss << "> SELECT * FROM " << tableName << ";" << endl;
     for (int i = 0; i < (int)colDefs.size(); i++) {
         size_t sp = colDefs[i].find(' ');
         string cName = (sp == string::npos) ? colDefs[i] : colDefs[i].substr(0, sp);
         oss << cName;
         if (i < (int)colDefs.size() - 1) oss << ",";
     }
-    oss << "\n";
+    oss << endl;
     for (auto &r : g_tables[idx].table.data) {
         for (int i = 0; i < (int)r.size(); i++) {
             oss << r[i];
             if (i < (int)r.size() - 1) oss << ",";
         }
-        oss << "\n";
+        oss << endl;
     }
-    oss << "\n";
+    oss << endl;
     appendToFile(g_outputFile, oss.str());
 }
 
 void deleteFromTable(const string &command) {
-    /**
-     * Extracts table name from "DELETE FROM tableName WHERE ...",
-     * locates the column in the WHERE clause, and removes matching rows.
-     * Finally, prints the table after deletion.
+    /*
+     Extracts table name from "DELETE FROM tableName WHERE ...",
+     locates the column in the WHERE clause, and removes matching rows.
+     Finally, prints the table after deletion.
      */
     {
         ostringstream oss;
-        oss << "> " << command << ";\n";
+        oss << "> " << command << ";" << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     size_t fromPos  = command.find("FROM");
     size_t wherePos = command.find("WHERE");
     if (fromPos == string::npos || wherePos == string::npos) {
-        cerr << "Error: invalid DELETE syntax.\n";
+        cerr << "Error: invalid DELETE syntax." << endl;
         return;
     }
     // Extract table name
     string tableName = trim(command.substr(fromPos + 4, wherePos - (fromPos + 4)));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found->" << tableName << "\n";
+        cerr << "Error: Table not found->" << tableName << endl;
         return;
     }
 
@@ -509,7 +530,7 @@ void deleteFromTable(const string &command) {
     string wClause = trim(command.substr(wherePos + 5));
     size_t eq = wClause.find("=");
     if (eq == string::npos) {
-        cerr << "Error: invalid WHERE clause.\n";
+        cerr << "Error: invalid WHERE clause." << endl;
         return;
     }
     string wCol = trim(wClause.substr(0, eq));
@@ -527,7 +548,7 @@ void deleteFromTable(const string &command) {
         }
     }
     if (wIndex < 0) {
-        cerr << "Error: column not found.\n";
+        cerr << "Error: column not found." << endl;
         return;
     }
 
@@ -542,45 +563,45 @@ void deleteFromTable(const string &command) {
 
     // Print updated table
     ostringstream oss;
-    oss << "> SELECT * FROM " << tableName << ";\n";
+    oss << "> SELECT * FROM " << tableName << ";" << endl;
     for (int i = 0; i < (int)colDefs.size(); i++) {
         size_t sp = colDefs[i].find(' ');
         string cName = (sp == string::npos) ? colDefs[i] : colDefs[i].substr(0, sp);
         oss << cName;
         if (i < (int)colDefs.size() - 1) oss << ",";
     }
-    oss << "\n";
+    oss << endl;
     for (auto &r : g_tables[idx].table.data) {
         for (int i = 0; i < (int)r.size(); i++) {
             oss << r[i];
             if (i < (int)r.size() - 1) oss << ",";
         }
-        oss << "\n";
+        oss << endl;
     }
-    oss << "\n";
+    oss << endl;
     appendToFile(g_outputFile, oss.str());
 }
 
 void selectAll(const string &command) {
-    /**
-     * SELECT * FROM tableName;
-     * Prints column headers and each row to the output file.
+    /*
+     SELECT * FROM tableName;
+     Prints column headers and each row to the output file.
      */
     {
         ostringstream oss;
-        oss << "> " << command << ";\n";
+        oss << "> " << command << ";" << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     size_t fromPos = command.find("FROM");
     if (fromPos == string::npos) {
-        cerr << "Error: invalid SELECT syntax.\n";
+        cerr << "Error: invalid SELECT syntax." << endl;
         return;
     }
     string tableName = trim(command.substr(fromPos + 4));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found.\n";
+        cerr << "Error: Table not found." << endl;
         return;
     }
     auto &colDefs = g_tables[idx].table.columnDefinitions;
@@ -594,43 +615,42 @@ void selectAll(const string &command) {
         oss << cName;
         if (i < (int)colDefs.size() - 1) oss << ",";
     }
-    oss << "\n";
+    oss << endl;
     // Print rows
     for (auto &r : rows) {
         for (int i = 0; i < (int)r.size(); i++) {
             oss << r[i];
             if (i < (int)r.size() - 1) oss << ",";
         }
-        oss << "\n";
+        oss << endl;
     }
-    oss << "\n";
+    oss << endl;
     appendToFile(g_outputFile, oss.str());
 }
 
 void countRows(const string &command) {
-    /**
-     * SELECT COUNT(*) FROM tableName;
-     * Simply prints the total number of rows in the table.
+    /*
+     Simply prints the total number of rows in the table.
      */
     {
         ostringstream oss;
-        oss << "> " << command << "\n";
+        oss << "> " << command << endl;
         appendToFile(g_outputFile, oss.str());
     }
 
     size_t fromPos = command.find("FROM");
     if (fromPos == string::npos) {
-        cerr << "Error: invalid COUNT syntax.\n";
+        cerr << "Error: invalid COUNT syntax." << endl;
         return;
     }
     string tableName = trim(command.substr(fromPos + 4));
     int idx = findTableIndex(tableName);
     if (idx < 0) {
-        cerr << "Error: Table not found.\n";
+        cerr << "Error: Table not found." << endl;
         return;
     }
 
     ostringstream oss;
-    oss << g_tables[idx].table.data.size() << "\n\n";
+    oss << g_tables[idx].table.data.size() << endl << endl;
     appendToFile(g_outputFile, oss.str());
 }
