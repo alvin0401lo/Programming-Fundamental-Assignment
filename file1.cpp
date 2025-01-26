@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <cctype>
-
 using namespace std;
 
 //Represents a table structure, containing column definitions and row data.
@@ -127,7 +126,8 @@ Reads the file line by line, concatenates them into `current`,
 and splits on ';'. Returns a vector of trimmed commands (strings).
 */
     vector<string> commands;
-    ifstream fin(filename);
+    ifstream fin;
+    fin.open(filename);
     if (!fin.is_open()) {
         cerr << "Error: Unable to open file " << filename << endl;
         exit(1);
@@ -179,7 +179,8 @@ void appendToFile(const string &filename, const string &content) {
 
     //Opens file in append mode and writes `content` to it.
     cout << content;
-    ofstream ofs(filename, ios::app);
+    ofstream ofs;
+    ofs.open(filename, ios::app);
     if (!ofs.is_open()) {
         cerr << "Error: Unable to write to file " << filename << endl;
         exit(1);
@@ -229,7 +230,8 @@ void handleCreateFile(const string &command) {
     cmd = trim(cmd);
 
     g_outputFile = cmd;
-    ofstream ofs(g_outputFile);
+    ofstream ofs;
+    ofs.open(g_outputFile);
     if (!ofs.is_open()) {
         cerr << "Error creating file: " << g_outputFile << endl;
         return;
@@ -351,10 +353,32 @@ void createTable(const string &command) {
 }
 
 void insertIntoTable(const string &command) {
-    /*
-     Extracts table name from "INSERT INTO tableName ...",
-     parses the VALUES(...) section, and appends a new row to the table.
-    */
+
+    // Static variables for counting
+    static bool s_inited = false;         // True if we've already counted total inserts
+    static int  s_totalInserts = 0;       // How many "INSERT" commands are in the .mdb file
+    static int  s_currentInserts = 0;     // How many inserts we've actually processed
+
+    // On the first call, read the entire .mdb file again
+    if (!s_inited) {
+        // Use the same path the user entered at runtime, stored in g_databasePath.
+        vector<string> allCommands = readMdbFile(g_databasePath);
+
+        // Count how many lines have "INSERT INTO"
+        for (auto &cmdLine : allCommands) {
+            string upper = cmdLine;
+            for (auto &c : upper) {
+                c = toupper(c);
+            }
+            if (upper.find("INSERT INTO") != string::npos) {
+                s_totalInserts++;
+            }
+        }
+
+        s_inited = true; // We won't do this check again
+    }
+
+    //Regular insert logic
     {
         ostringstream oss;
         oss << "> " << command << ";" << endl;
@@ -363,32 +387,29 @@ void insertIntoTable(const string &command) {
 
     size_t intoPos = command.find("INTO");
     size_t valPos  = command.find("VALUES");
-    if (intoPos == string::npos || valPos == string::npos)
-        {
+    if (intoPos == string::npos || valPos == string::npos) {
         cerr << "Error: invalid INSERT syntax." << endl;
         return;
-        }
+    }
 
-    // Extract substring: "tableName(...)" part
+    // Extract table name
     string sub = trim(command.substr(intoPos + 4, valPos - (intoPos + 4)));
     size_t p = sub.find("(");
     string tableName = (p == string::npos) ? sub : trim(sub.substr(0, p));
 
     int idx = findTableIndex(tableName);
-    if (idx < 0)
-        {
+    if (idx < 0) {
         cerr << "Error: Table not found -> " << tableName << endl;
         return;
-        }
+    }
 
-    // Find parentheses for VALUES
+    // Parse VALUES(...) content
     size_t lp = command.find("(", valPos);
     size_t rp = command.find(")", lp);
-    if (lp == string::npos || rp == string::npos)
-        {
+    if (lp == string::npos || rp == string::npos) {
         cerr << "Error: INSERT missing parentheses." << endl;
         return;
-        }
+    }
 
     string valPart = command.substr(lp + 1, rp - (lp + 1));
     vector<string> row;
@@ -399,8 +420,48 @@ void insertIntoTable(const string &command) {
             row.push_back(trim(v));
         }
     }
+
+    // Insert the new row into the table
     g_tables[idx].table.data.push_back(row);
+
+    //Increment our current insert count
+    s_currentInserts++;
+
+    // If this is the final insert (comparing to total), print the table
+    if (s_currentInserts == s_totalInserts && s_totalInserts > 0) {
+        // Create a pseudo "SELECT * FROM tableName;" for clarity
+        ostringstream oss;
+        oss << "> SELECT * FROM " << tableName << ";" << endl;
+
+        auto &colDefs = g_tables[idx].table.columnDefinitions;
+        auto &rows    = g_tables[idx].table.data;
+
+        // Print column names
+        for (int i = 0; i < (int)colDefs.size(); i++) {
+            size_t sp = colDefs[i].find(' ');
+            string cName = (sp == string::npos)
+                         ? colDefs[i]
+                         : colDefs[i].substr(0, sp);
+            oss << cName;
+            if (i < (int)colDefs.size() - 1) oss << ",";
+        }
+        oss << endl;
+
+        // Print all rows
+        for (auto &r : rows) {
+            for (int i = 0; i < (int)r.size(); i++) {
+                oss << r[i];
+                if (i < (int)r.size() - 1) oss << ",";
+            }
+            oss << endl;
+        }
+        oss << endl;
+
+        // Write it to the file & console
+        appendToFile(g_outputFile, oss.str());
+    }
 }
+
 
 void updateTable(const string &command) {
     /*
