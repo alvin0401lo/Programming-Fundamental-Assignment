@@ -36,7 +36,7 @@ void displayContent(const string &);
 
 void fileDelete(const string &);
 void fileUpdate(const string &);
-void fileCount(const string &);
+void fileCount();
 void insertNewRow(const string &);
 
 // Helper function: Write current data (columnHeaders, tableData) to fileName.txt in CSV format
@@ -44,6 +44,7 @@ void writeCsvToTxt(const string &);
 
 int main()
 {
+    string fileName;
     while (true)
     {
         cout << "\n1. Create a file (.txt)" << endl;
@@ -54,34 +55,31 @@ int main()
         int mode;
         cin >> mode;
 
-        if (mode == 1)
+        switch (mode)
         {
-            // Create a new .txt file
-            cout << "Please enter the file name (no extension needed): ";
-            string fileName;
+        case 1:
+            // Create a new file
+            cout << "Please enter the file name (no extension needed like .txt): ";
             cin >> fileName;
-
             fileCreate(fileName);
             tableCreate(fileName);
             secondOption(fileName);
-        }
-        else if (mode == 2)
-        {
-            // Open an existing .mdb file
-            cout << "Please enter the file name (no extension needed): ";
-            string fileName;
-            cin >> fileName;
+            break;
 
+        case 2:
+            // Open an existing file
+            cout << "Please enter the file name (no extension needed like .mdb): ";
+            cin >> fileName;
             fileOpen(fileName);
             secondOption(fileName);
-        }
-        else if (mode == 3)
-        {
+            break;
+
+        case 3:
+            // Exit the program
             cout << "Exiting program..." << endl;
             return 0;
-        }
-        else
-        {
+
+        default:
             cout << "Invalid choice, please try again!" << endl;
         }
     }
@@ -216,10 +214,10 @@ void fileOpen(const string &fileName)
 // Displays the current table content (from memory) in CSV style
 void displayContent(const string &fileName)
 {
-    cout << "\nTable Content (from memory) for \"" << fileName << ".txt\":\n";
+    cout << "\nTable Content for \"" << fileName << ".txt\":" << endl;
 
     // Print column headers
-    for (size_t i = 0; i < columnHeaders.size(); i++)
+    for (int i = 0; i < columnHeaders.size(); i++)
     {
         cout << columnHeaders[i];
         if (i < columnHeaders.size() - 1) cout << ",";
@@ -229,7 +227,7 @@ void displayContent(const string &fileName)
     // Print row data
     for (auto & row : tableData)
     {
-        for (size_t j = 0; j < row.size(); j++)
+        for (int j = 0; j < row.size(); j++)
         {
             cout << row[j];
             if (j < row.size() - 1) cout << ",";
@@ -243,7 +241,7 @@ void secondOption(const string &fileName)
 {
     while (true)
     {
-        cout << "\nChoose an option:" << endl;
+        cout << "Choose an option:" << endl;
         cout << "1. Delete a specific row" << endl;
         cout << "2. Update a specific field" << endl;
         cout << "3. Count the number of rows" << endl;
@@ -263,7 +261,7 @@ void secondOption(const string &fileName)
             fileUpdate(fileName);
             break;
         case 3:
-            fileCount(fileName);
+            fileCount();
             break;
         case 4:
             insertNewRow(fileName);
@@ -291,7 +289,7 @@ void writeCsvToTxt(const string &fileName)
     }
 
     // Column headers
-    for (size_t i = 0; i < columnHeaders.size(); i++)
+    for (int i = 0; i < columnHeaders.size(); i++)
     {
         outfile << columnHeaders[i];
         if (i < columnHeaders.size() - 1)
@@ -302,7 +300,7 @@ void writeCsvToTxt(const string &fileName)
     // Rows
     for (auto & row : tableData)
     {
-        for (size_t j = 0; j < row.size(); j++)
+        for (int j = 0; j < row.size(); j++)
         {
             outfile << row[j];
             if (j < row.size() - 1)
@@ -368,7 +366,7 @@ void fileUpdate(const string &fileName)
 
     // Display the record found for reference.
     cout << "Record found:" << endl;
-    for (size_t j = 0; j < columnHeaders.size(); j++) {
+    for (int j = 0; j < columnHeaders.size(); j++) {
         cout << j + 1 << ". " << columnHeaders[j] << " : " << tableData[rowIndex][j] << endl;
     }
 
@@ -397,7 +395,7 @@ void fileUpdate(const string &fileName)
 
 
 // Prints the current number of rows in the table
-void fileCount(const string &/*fileName*/)
+void fileCount()
 {
     cout << "The number of rows in the table: " << tableData.size() << endl;
 }
@@ -415,7 +413,7 @@ void insertNewRow(const string &fileName)
 
     vector<string> newRow;
     cout << "Entering data for the new row:" << endl;
-    for (size_t i = 0; i < columnHeaders.size(); i++)
+    for (int i = 0; i < columnHeaders.size(); i++)
     {
         cout << columnHeaders[i] << ": ";
         string value;
