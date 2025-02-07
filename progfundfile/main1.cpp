@@ -1,3 +1,21 @@
+// *********************************************************
+// Program: YOUR_FILENAME.cpp
+// Course: CCP6114 Programming Fundamentals
+// Lecture Class: TC1L
+// Tutorial Class: TT1L
+// Trimester: 2430
+// Member_1: 242UC241BQ | ALVIN LO JIAN WEN | ALVIN.LO.JIAN@student.mmu.edu.my | 011-2741 6523
+// Member_2: 242UC244M6 | YAP HUI CHI | YAP.HUI.CHI@student.mmu.edu.my | 016-3225726
+// Member_3: 242UC2426R | BIANCA LAU YING XUAN | BIANCA.LAU.YING@student.mmu.edu.my | 010-2752246
+// Member_4: 242UC244KQ | NG BAI KEONG | NG.BAI.KEONG@student.mmu.edu.my | 018-6605595
+// *********************************************************
+// Task Distribution
+// Member_1: Created updateFile, displayContent, countRow function. Made the user documentation for this programme.
+// Member_2: Flowchart, debug
+// Member_3: insertNewRow, check the user documentation
+// Member_4: Created Delete function, check the structure diagram
+// *********************************************************
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -323,53 +341,60 @@ void fileDelete(const string &fileName)
 }
 
 
-// Allows updating all cells in a certain column that match oldValue
+// Modified update function: Locate record by id, then update a specified field.
 void fileUpdate(const string &fileName)
 {
+    // Display the current table content
     displayContent(fileName);
 
-    cout << "Enter the column name to update: ";
-    string columnName;
-    cin >> columnName;
+    // Ask the user to enter the id of the record to update.
+    cout << "Please enter the id of the record to update: ";
+    string idValue;
+    cin >> idValue;
 
-    cout << "Enter the value to find: ";
-    string oldValue;
-    cin >> oldValue;
-
-    cout << "Enter the new value: ";
-    string newValue;
-    cin >> newValue;
-
-    // Find the column index
-    int columnIndex = -1;
-    for (size_t i = 0; i < columnHeaders.size(); ++i)
-    {
-        if (columnHeaders[i] == columnName)
-        {
-            columnIndex = i;
+    // Assume that the id is stored in the first column (index 0)
+    int rowIndex = -1;
+    for (int i = 0; i < tableData.size(); i++) {
+        if (tableData[i][0] == idValue) {
+            rowIndex = i;
             break;
         }
     }
 
-    if (columnIndex == -1)
-    {
-        cout << "Column not found!" << endl;
+    if (rowIndex == -1) {
+        cout << "No record found with id \"" << idValue << "\"!" << endl;
         return;
     }
 
-    // Update rows
-    for (auto & row : tableData)
-    {
-        if (row[columnIndex] == oldValue)
-        {
-            row[columnIndex] = newValue;
-        }
+    // Display the record found for reference.
+    cout << "Record found:" << endl;
+    for (size_t j = 0; j < columnHeaders.size(); j++) {
+        cout << j + 1 << ". " << columnHeaders[j] << " : " << tableData[rowIndex][j] << endl;
     }
 
-    // Write updated data back to file
+    // Ask the user which column they want to update (by column number).
+    cout << "Please enter the column number to update: ";
+    int colNumber;
+    cin >> colNumber;
+    if (colNumber <= 0 || colNumber > (int)columnHeaders.size()) {
+        cout << "Invalid column number!" << endl;
+        return;
+    }
+    int colIndex = colNumber - 1;
+
+    // Get the new value from the user.
+    cout << "Enter the new value for " << columnHeaders[colIndex] << ": ";
+    string newValue;
+    cin >> newValue;
+
+    // Update the specified field in the located record.
+    tableData[rowIndex][colIndex] = newValue;
+
+    // Write the updated data back to the file.
     writeCsvToTxt(fileName);
-    cout << "Update successful!" << endl;
+    cout << "Record updated successfully!" << endl;
 }
+
 
 // Prints the current number of rows in the table
 void fileCount(const string &/*fileName*/)
